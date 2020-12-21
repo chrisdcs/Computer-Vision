@@ -1,6 +1,3 @@
-# Computer_Vision
- The project for collecting CV algorithms that I know, which is always something I wanted to do. (Note this is still a ReadMe template, more mateirials to come...)
-
 <!--
 *** Thanks for checking out the Best-README-Template. If you have a suggestion
 *** that would make this better, please fork the repo and create a pull request
@@ -23,6 +20,10 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
+
+# Computer_Vision
+ The project for collecting CV algorithms that I know, which is always something I wanted to do. (Note this is still a ReadMe template, more mateirials to come...)
+
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
