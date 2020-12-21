@@ -69,7 +69,6 @@
       </ul>
     </li>
     <li>
-    <li>
       <a href="#algorithms">Algorithms</a>
       <ul>
         <li><a href="#cascade classifier">Cascade Classifier</a></li>
