@@ -16,14 +16,18 @@ def norm(img):
 #%% gamma correction
 img = cv2.imread('bird.jpg')
 gamma = 3
-img_g = norm(img**(1/gamma))
-plt.imshow(img),plt.show()
-plt.imshow(img_g), plt.show()
+# img_g = norm(img**(1/gamma))
+# plt.imshow(img),plt.show()
+# plt.imshow(img_g), plt.show()
 #%% color transform
 parameters = np.random.rand(3)
 img_c = img.copy()
+img_g = norm(img**(1/gamma))
 for i in range(3):
     img_c[:,:,i] = img_c[:,:,i] * parameters[i]
+    img_g[:,:,i] = img_g[:,:,i] * parameters[i]
     
 # img_c = norm(img_c)
 plt.imshow(norm(img_c**(1/gamma)))
+plt.title('color+gamma'),plt.show()
+plt.imshow(img_g), plt.title('gamma+color')
