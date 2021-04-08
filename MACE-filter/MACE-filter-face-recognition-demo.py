@@ -15,11 +15,13 @@ trainD = np.zeros((10,64,64)).astype(np.uint8)
 # print(os.getcwd())
 
 for i in range(10):
-    trainD[i] = cv2.imread(r'MACE-filter\faceExpressionDatabase\A'+ str(i // 10) + str(i % 10) + '.bmp',-1)
+    fname = r'faceExpressionDatabase\A'+ str(i // 10) + str(i % 10) + '.bmp'
+    trainD[i] = cv2.imread(fname,-1)
     
 testD = np.zeros((60,64,64)).astype(np.uint8)
 for i in range(60):
-    testD[i] = cv2.imread(r'MACE-filter\faceExpressionDatabase\D' + str(i // 10) + str(i % 10) + '.bmp',-1)    
+    fname = r'faceExpressionDatabase\D' + str(i // 10) + str(i % 10) + '.bmp'
+    testD[i] = cv2.imread(fname,-1)    
 #%%
 maceA = MACE(trainD)
 maceA.train()
