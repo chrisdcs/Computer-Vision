@@ -7,6 +7,7 @@ Created on Thu Apr  1 20:35:58 2021
 
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 import scipy.signal as ss
 import scipy.stats as st
 #%%
@@ -22,7 +23,8 @@ def gkern(kernlen=21, nsig=3):
 d_x = np.array([[1,2,1],[0,0,0],[-1,-2,-1]])
 d_y = d_x.T
 
-I = cv2.imread('box.jpg',0)
+F_name = 'Lenna.png'#'box.jpg'
+I = cv2.imread(F_name,0)
 Ix = ss.convolve2d(I,d_x,'same')
 Iy = ss.convolve2d(I,d_y,'same')
 Ixy = Ix * Iy
@@ -35,6 +37,7 @@ det = Ixx * Iyy - Ixy ** 2
 trace = Ixx + Iyy
 
 harris = det - 0.06*trace**2
-# harris = (harris - harris.mean())/harris.std()
+harris = (harris - harris.mean())/harris.std()
 
-# corners = (harris > 0.3)
+corners = (harris > .3)
+plt.imshow(corners)

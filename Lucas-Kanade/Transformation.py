@@ -18,9 +18,10 @@ img = cv2.imread('Lenna.png')
 h,w,c = img.shape
 
 # define transformation matrix (in homogeneous coordinates)
-theta = np.pi/0.3
-M = np.array([[np.cos(theta),-np.sin(theta),0.],
-              [np.sin(theta),np.cos(theta),0.]]) # translation
+theta = 0
+t = .3
+M = np.array([[np.cos(theta),-np.sin(theta),t],
+              [np.sin(theta),np.cos(theta),t]]) # translation + rotation
 # M = np.array([[1+1.4,0.5,0.],
 #               [-0.5,1+1.4,0.]])
 
