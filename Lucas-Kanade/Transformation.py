@@ -72,4 +72,4 @@ wd = np.expand_dims(wd, axis=2)
 # compute output
 out = wa*Ia + wb*Ib + wc*Ic + wd*Id
 
-plt.imshow(out.astype(np.uint8))
+plt.imshow(out.astype(np.uint8),cmap='gray')

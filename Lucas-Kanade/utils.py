@@ -12,6 +12,53 @@ import matplotlib.pyplot as plt
 import scipy.signal as ss
 import scipy.stats as st
 #%%
+def warp(h,w,W):
+    # h is height
+    # w is width
+    # W is the warping matrix
+    x = np.linspace(-1, 1, h)
+    y = np.linspace(-1, 1, w)
+    
+    
+    return
+
+class Transform2D:
+    """
+        This class computes the affine 2D transform
+            To Do: Should add projective transform as well
+    """
+    
+    def __init__(self,):
+        self.W = None
+        
+    def interpolation(self):
+        pass
+        
+    def fit(self,x1,x2,y1,y2,W):
+        # generate normalized grid
+        h = x2 - x1 + 1
+        w = y2 - y1 + 1
+        x = np.linspace(-1, 1, h)
+        y = np.linspace(-1, 1, w)
+        
+        # create homogeneous coordinates
+        xt,yt = np.meshgrid(x,y)
+        ones = np.ones(np.prod(xt.shape))
+        grid = np.vstack([xt.flatten(),yt.flatten(),ones])
+        
+        grid_transform = W @ grid
+        grid_transform = grid_transform.reshape(-1,h,w,order='F')
+        
+        xt1 = grid_transform[0]
+        yt1 = grid_transform[1]
+        
+        # transform back to the range of (x1,x2), (y1,y2)
+        x_new = (xt1 * h + x1 * 2) / 2
+        y_new = (yt1 * w + y1 * 2) / 2
+
+def normalize_img(img):
+    return (img - np.min(img))/255
+
 class Corner:
     
     def __init__(self,I):
