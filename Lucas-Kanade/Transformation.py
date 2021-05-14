@@ -69,7 +69,7 @@ wb = np.expand_dims(wb, axis=2)
 wc = np.expand_dims(wc, axis=2)
 wd = np.expand_dims(wd, axis=2)
 
-# compute output
+# compute output by interpolation
 out = wa*Ia + wb*Ib + wc*Ic + wd*Id
 
 plt.imshow(out.astype(np.uint8),cmap='gray')
