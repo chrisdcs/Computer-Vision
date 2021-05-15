@@ -99,8 +99,8 @@ class Transform2D:
         # compute Jacobian matrix of W evaluated at x,y
         h = x2 - x1
         w = y2 - y1
-        x = np.linspace(x1, x2, h+1)[:-1]
-        y = np.linspace(y1, y2, w+1)[:-1]
+        x = np.linspace(-1, 1, h+1)[:-1]
+        y = np.linspace(-1, 1, w+1)[:-1]
         
         Jacobian = np.zeros((h*w,2,6))
         idx = 0

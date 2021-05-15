@@ -12,12 +12,12 @@ import scipy.signal as ss
 from utils import normalize_img,Transform2D
 
 img1 = cv2.imread(r'img\0001.jpg',0)
-img2 = cv2.imread(r'img\0003.jpg',0)
+img2 = cv2.imread(r'img\0004.jpg',0)
 
 img1 = normalize_img(img1)
 img2 = normalize_img(img2)
 
-x1,x2,y1,y2 = 70,150,150,220
+x1,x2,y1,y2 = 70,150,160,210
 
 T = img1[x1:x2,y1:y2]
 
