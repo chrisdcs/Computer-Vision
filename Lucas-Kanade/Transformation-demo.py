@@ -5,11 +5,9 @@ Created on Tue Mar 23 17:12:05 2021
 @author: m1390
 """
 
-import autograd as ad
-# import autograd.numpy as np
 import numpy as np
 import cv2
-from PIL import Image
+# from utils.Transform2D import Transform2D
 import matplotlib.pyplot as plt
 #%% a short demo for linear transformation
 img = cv2.imread('Lenna.png')
