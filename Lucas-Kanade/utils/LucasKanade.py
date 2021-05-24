@@ -11,7 +11,7 @@ from utils.Transform2D import Transform2D
 
 class Lucas_Kanade:
 
-    def __init__(self, I, max_iter, tol):
+    def __init__(self, I, max_iter, tol, box):
 
         # I is the initialization image, assume image size don't change
         self.transform = Transform2D(I)
@@ -36,34 +36,42 @@ class Lucas_Kanade:
         self.tol = tol
         
         self.history = []
+        
+        self.h = box[1] - box[0]
+        self.w = box[3] - box[2]
 
-    def fit(self, T, I, coordinates):
+    def fit(self, T, I, box, box0 = None):
 
-        x1, x2, y1, y2 = coordinates
+        x1, x2, y1, y2 = box
 
         iteration = 0
 
         while True:
             # warp image using warping matrix W (step 1)
-            IW = self.transform.fit(x1, x2, y1, y2, self.W, I)
+            _,IW = self.transform.fit(box, self.W, I)
 
             # compute the error image (step 2)
-            error_img = T[x1:x2,y1:y2] - IW
+            if box0 is None:
+                error_img = T[x1:x2,y1:y2] - IW
+            else:
+                x10,x20,y10,y20 = box0
+                error_img = T[x10:x20,y10:y20] - IW
 
             # compute and warp gradient ∇I with W(x,p) (step 3)
             Ix = ss.convolve2d(I, self.d_x, 'same')
             Iy = ss.convolve2d(I, self.d_y, 'same')
 
             # warp gradient
-            IWx = self.transform.fit(x1, x2, y1, y2, self.W, Ix)
-            IWy = self.transform.fit(x1, x2, y1, y2, self.W, Iy)
+            _,IWx = self.transform.fit(box, self.W, Ix)
+            _,IWy = self.transform.fit(box, self.W, Iy)
+            
             gradI = np.zeros((2, IWx.shape[0]*IWx.shape[1]))
             gradI[0] = IWx.flatten()
             gradI[1] = IWy.flatten()
             gradI = gradI.T
 
             # compute Jacobian (step 4) and Steepest Descent images (step 5)
-            Jacobian = self.transform.compute_jacobian(x1, x2, y1, y2, self.W)
+            Jacobian = self.transform.compute_jacobian(box, self.W)
             SDI = (gradI[:, None, :] @ Jacobian).squeeze()
 
             # compute Hessian and solve least squares
@@ -93,5 +101,13 @@ class Lucas_Kanade:
             if iteration >= self.max_iter:
                 break
         
-        IW = self.transform.fit(x1, x2, y1, y2, self.W, I)
-        return IW
+        box, IW = self.transform.fit(box, self.W, I)
+        
+        # tight bounding box setting
+        box = (box[0],np.clip(box[1],box[0]+self.h,box[0]+self.h),
+               box[2],np.clip(box[3],box[1]+self.w,box[2]+self.w))
+        
+        return box, IW
+    
+    def template_correction(self,):
+        pass

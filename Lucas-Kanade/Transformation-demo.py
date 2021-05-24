@@ -20,8 +20,6 @@ theta = 0
 t = .3
 M = np.array([[np.cos(theta),-np.sin(theta),t],
               [np.sin(theta),np.cos(theta),t]]) # translation + rotation
-# M = np.array([[1+1.4,0.5,0.],
-#               [-0.5,1+1.4,0.]])
 
 # generate normalized grid
 x = np.linspace(-1,1,h)

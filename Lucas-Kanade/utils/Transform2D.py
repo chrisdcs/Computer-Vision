@@ -22,6 +22,7 @@ class Transform2D:
         self.width = I.shape[1]
 
     def interpolation(self, x, y, img):
+        # only linear for now
 
         # x,y are double float type coordinates
         x0 = np.floor(x).astype(np.int64)
@@ -55,15 +56,18 @@ class Transform2D:
         # compute output
         IW = wa*Ia + wb*Ib + wc*Ic + wd*Id
 
-        return IW
+        return (x0.min(),x0.max()+1,y0.min(),y0.max()+1), IW
 
-    def fit(self, x1, x2, y1, y2, W, img):
-
-        # generate normalized grid
+    def fit(self, box, W, img):
+        
+        x1,x2,y1,y2 = box
+        
+        # generate grid
         h = x2 - x1
         w = y2 - y1
-        x = np.linspace(-1, 1, h+1)[:-1]
-        y = np.linspace(-1, 1, w+1)[:-1]
+
+        x = np.linspace(x1, x2, h+1)[:-1]
+        y = np.linspace(y1, y2, w+1)[:-1]
 
         # create homogeneous coordinates
         xt, yt = np.meshgrid(x, y)
@@ -73,24 +77,38 @@ class Transform2D:
         grid_transform = W @ grid
         grid_transform = grid_transform.reshape(-1, h, w, order='F')
 
-        xt1 = grid_transform[0]
-        yt1 = grid_transform[1]
+        x_new = grid_transform[0]
+        y_new = grid_transform[1]
+        
+        """
+        # An alternative
+        
+        grid = np.array([[x1,x2],[y1,y2],[1,1]])
+        grid_transform = W @ grid
+        
+        x1_new = grid_transform[0,0]
+        x2_new = grid_transform[0,1]
+        y1_new = grid_transform[1,0]
+        y2_new = grid_transform[1,1]
+        
+        x = np.linspace(x1_new, x2_new, int(x2 - x1) + 1)[:-1]
+        y = np.linspace(y1_new, y2_new, int(y2 - y1) + 1)[:-1]
+        
+        y_new, x_new = np.meshgrid(y,x)
+        """
+        
+        box,IW = self.interpolation(x_new, y_new, img)
 
-        # transform back to the range of (x1,x2), (y1,y2)
-        x_new = (xt1 + 1) / 2 * h + x1
-        y_new = (yt1 + 1) / 2 * w + y1
+        return box,IW
 
-        IW = self.interpolation(x_new, y_new, img)
-
-        return IW
-
-    def compute_jacobian(self, x1, x2, y1, y2, W):
-
+    def compute_jacobian(self, box, W):
+        
+        x1,x2,y1,y2 = box
         # compute Jacobian matrix of W evaluated at x,y
         h = x2 - x1
         w = y2 - y1
-        x = np.linspace(-1, 1, h+1)[:-1]
-        y = np.linspace(-1, 1, w+1)[:-1]
+        x = np.linspace(x1, x2, h+1)[:-1]
+        y = np.linspace(y1, y2, w+1)[:-1]
 
         Jacobian = np.zeros((h*w, 2, 6))
         idx = 0
@@ -102,3 +120,6 @@ class Transform2D:
                 idx += 1
 
         return Jacobian
+    
+    def extract_patch(self):
+        pass
