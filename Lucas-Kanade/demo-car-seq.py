@@ -8,9 +8,8 @@ Created on Fri May 21 14:06:02 2021
 # import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
+import cv2
 from utils.LucasKanade import Lucas_Kanade
-from utils.miscellaneous import normalize_img
 
 # for car sequence it's better to use a tight bounding box
 frames = np.load('data/carseq.npy')
@@ -29,7 +28,8 @@ tol = 0.05
 LKT = Lucas_Kanade(frames[:,:,0], max_iter, tol, box)
 frame0 = frames[:,:,0]
 
-# W_list = []
+fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+out = cv2.VideoWriter('results/result.mp4', fourcc, 30.0, (320,  240))
 
 for i in range(1,seq_len):
     
@@ -44,20 +44,26 @@ for i in range(1,seq_len):
     
     
     box0 = (box0[0],box0[0]+height,box0[2],box0[2]+width)
+    
     if i % 5 == 0 or ((i>= 270) and (i <= 290)) or (i>= 310):
+        # If statement is for speed up computation
+        
         # This is a template correction step
         box, Iw = LKT.fit(frame0, I, box, box0)
     
-    # if i % 50 == 0:
-    #     frame0 = I.copy()
-    #     box0 = box
+    # add bounding box to each frame
+    I = ((I-I.min())/(I.max()-I.min())*255).astype(np.uint8)
+    I = cv2.cvtColor(I, cv2.COLOR_GRAY2RGB)
+    cv2.rectangle(I, (box[2], box[0]), (box[3], box[1]), (0, 0, 255), 2)
     
+    # write frames to video
+    out.write(I)
     
-    if i % 10 == 0 or i == 1:
+    # plot every 10 frames
+    if i % 50 == 0 or i == 1:
         plt.figure()
-        plt.imshow(frames[:,:,i],cmap='gray')
-        bbox = patches.Rectangle((int(box[2]), int(box[0])), width, height,
-                                 fill=False, edgecolor='red', linewidth=2)
-        plt.gca().add_patch(bbox)
+        plt.imshow(I)
         plt.title('frame %d'%i)
         plt.show()
+        
+out.release()
