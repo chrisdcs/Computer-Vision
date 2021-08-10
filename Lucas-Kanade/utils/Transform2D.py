@@ -120,6 +120,3 @@ class Transform2D:
                 idx += 1
 
         return Jacobian
-    
-    def extract_patch(self):
-        pass
