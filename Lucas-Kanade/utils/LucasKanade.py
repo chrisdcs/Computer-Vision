@@ -6,7 +6,7 @@ Created on Tue May 18 17:31:10 2021
 """
 
 import numpy as np
-import scipy.signal as ss
+from scipy import signal
 from utils.Transform2D import Transform2D
 
 class Lucas_Kanade:
@@ -19,6 +19,7 @@ class Lucas_Kanade:
         # initialize warping
         # affine transform, can be generalized by projective transform
         self.W = np.column_stack([np.eye(2), np.zeros((2, 1))])
+        self.W_old = None
 
         self.p = np.zeros(6)
 
@@ -27,10 +28,6 @@ class Lucas_Kanade:
 
         # tolerance/threshold for stopping criterion
         self.max_iter = max_iter
-
-        # dx and dy are kernels for computing image gradients
-        self.d_x = np.array([[1, 2, 1], [0, 0, 0], [-1, -2, -1]])
-        self.d_y = self.d_x.T
         
         # tolerance for least square template registration stopping criterion
         self.tol = tol
@@ -52,14 +49,15 @@ class Lucas_Kanade:
 
             # compute the error image (step 2)
             if box0 is None:
-                error_img = T[x1:x2,y1:y2] - IW
+                template = T[x1:x2,y1:y2]
+                error_img = template - IW
             else:
                 x10,x20,y10,y20 = box0
-                error_img = T[x10:x20,y10:y20] - IW
+                template = T[x10:x20,y10:y20]
+                error_img = template - IW
 
             # compute and warp gradient ∇I with W(x,p) (step 3)
-            Ix = ss.convolve2d(I, self.d_x, 'same')
-            Iy = ss.convolve2d(I, self.d_y, 'same')
+            Ix, Iy = np.gradient(I)
 
             # warp gradient
             _,IWx = self.transform.fit(box, self.W, Ix)
@@ -99,15 +97,17 @@ class Lucas_Kanade:
 
             iteration += 1
             if iteration >= self.max_iter:
+                # if it does not converge, use the previous parameters
+                self.W = self.W_old.copy()
                 break
         
         box, IW = self.transform.fit(box, self.W, I)
         
+        # Current W becomes old W
+        self.W_old = self.W.copy()
+        
         # tight bounding box setting
         box = (box[0],np.clip(box[1],box[0]+self.h,box[0]+self.h),
-               box[2],np.clip(box[3],box[1]+self.w,box[2]+self.w))
+               box[2],np.clip(box[3],box[2]+self.w,box[2]+self.w))
         
-        return box, IW
-    
-    def template_correction(self,):
-        pass
+        return box, IW, np.corrcoef(template.reshape(-1), IW.reshape(-1))[0][1]
